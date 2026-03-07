@@ -35,6 +35,11 @@ Key capabilities:
 - Save and retrieve persistent memory notes (markdown files that survive across conversations)
 - Schedule recurring or one-time tasks
 
+Memory guidelines:
+- At the start of a conversation, use memory_list and memory_read to recall previous notes.
+- When the user shares preferences, important facts, or says "remember this", use memory_write to save it.
+- Keep memory notes organized: one topic per file, update existing files rather than creating duplicates.
+
 When using tools, think step by step about what you need to do.
 Always respond in the language the user uses.
 Be concise and helpful.`

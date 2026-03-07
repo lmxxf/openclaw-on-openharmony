@@ -281,7 +281,7 @@ Agent 可调用的工具，通过 ToolRegistry 注册，LLM 通过 function call
 
 #### 4.3 Logger — `utils/Logger.ets` (23行)
 
-`hilog` 的薄封装，统一日志 TAG 为 `NanoClaw`。
+`hilog` 的薄封装，统一日志 TAG 为 `KienClaw`。
 
 ### 5. UI 页面
 
