@@ -13,7 +13,7 @@ async function webFetch(input: Record<string, Object>): Promise<string> {
     const response = await httpRequest.request(url, {
       method: http.RequestMethod.GET,
       header: {
-        'User-Agent': 'NanoClaw/1.0 (OpenHarmony)',
+        'User-Agent': 'KienClaw/1.0 (HarmonyOS)',
         'Accept': 'text/html,application/xhtml+xml,text/plain'
       },
       connectTimeout: 15000,
@@ -46,7 +46,7 @@ async function webSearch(input: Record<string, Object>): Promise<string> {
     const response = await httpRequest.request(url, {
       method: http.RequestMethod.GET,
       header: {
-        'User-Agent': 'NanoClaw/1.0 (OpenHarmony)',
+        'User-Agent': 'KienClaw/1.0 (HarmonyOS)',
         'Accept': 'text/html'
       },
       connectTimeout: 15000,

@@ -7,11 +7,11 @@
         "material": {
           "certpath": "C:\\Users\\lmxxf\\.ohos\\config\\default_openclaw_on_openharmony_YSImOC2OH-EreMlYkCx0zedV1xsi5FtwLBc11wv2WwQ=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BE11AC1708A64C9E422BD683520C458CB0A210A6A4355B6E45364BA0977048E07DF4828120AF3F7",
+          "keyPassword": "0000001B4F7FDC1299AC7F5C1E079CA0FB12092603DFB8FFFEABEF48029CB56DA6049A247D967BC44ACE45",
           "profile": "C:\\Users\\lmxxf\\.ohos\\config\\default_openclaw_on_openharmony_YSImOC2OH-EreMlYkCx0zedV1xsi5FtwLBc11wv2WwQ=.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "C:\\Users\\lmxxf\\.ohos\\config\\default_openclaw_on_openharmony_YSImOC2OH-EreMlYkCx0zedV1xsi5FtwLBc11wv2WwQ=.p12",
-          "storePassword": "0000001BF8BFB2CB697DD16FD480E8A2C073BC31714F0D7B28A114D0B8A6A995FA893C8A7BD7A74D2E253A"
+          "storePassword": "0000001B483EC0A1FFCEDE81FCF833FA290F021362305DA581D7091DAF4536E6A937540F26D7528CB9214D"
         }
       }
     ],

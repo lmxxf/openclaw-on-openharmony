@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f0f23"/>
+      <stop offset="100%" stop-color="#1a1a3e"/>
+    </linearGradient>
+    <linearGradient id="claw" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="100%" stop-color="#c9184a"/>
+    </linearGradient>
+    <linearGradient id="kblue" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#5cb8ff"/>
+      <stop offset="100%" stop-color="#3a86ff"/>
+    </linearGradient>
+    <filter id="glow1">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- Three claw slashes - sweeping from upper-left to lower-right -->
+  <g filter="url(#glow1)" opacity="0.95">
+    <!-- Claw 1 (left) -->
+    <path d="M240 120 C250 180, 230 320, 220 400 C210 460, 225 500, 260 520
+             L290 500 C265 480, 255 445, 265 390 C275 310, 290 180, 280 130Z"
+          fill="url(#claw)"/>
+    <!-- Claw 2 (center) -->
+    <path d="M400 100 C415 170, 395 310, 385 400 C375 470, 390 520, 425 545
+             L458 522 C430 500, 418 460, 428 385 C438 300, 455 165, 442 110Z"
+          fill="url(#claw)"/>
+    <!-- Claw 3 (right) -->
+    <path d="M560 120 C575 185, 555 320, 545 400 C535 465, 548 510, 585 535
+             L618 512 C590 492, 578 455, 588 385 C598 300, 615 180, 602 130Z"
+          fill="url(#claw)"/>
+  </g>
+
+  <!-- Big bold K - centered lower half -->
+  <g filter="url(#glow2)">
+    <!-- K vertical bar -->
+    <rect x="280" y="560" width="75" height="340" rx="12" fill="url(#kblue)"/>
+    <!-- K upper arm -->
+    <polygon points="355,690 590,565 620,615 365,730" fill="url(#kblue)"/>
+    <!-- K lower arm -->
+    <polygon points="355,740 620,895 590,945 345,780" fill="url(#kblue)"/>
+  </g>
+
+  <!-- Small accent: claw scratch marks on the K -->
+  <line x1="420" y1="610" x2="400" y2="700" stroke="#ff4d6d" stroke-width="3" opacity="0.3"/>
+  <line x1="480" y1="630" x2="460" y2="720" stroke="#ff4d6d" stroke-width="2" opacity="0.2"/>
+</svg>

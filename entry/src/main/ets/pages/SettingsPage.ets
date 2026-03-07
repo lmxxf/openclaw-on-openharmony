@@ -179,12 +179,12 @@ struct SettingsPage {
           }
 
           // Info
-          Text('NanoClaw on OpenHarmony')
+          Text('KienClaw')
             .fontSize(12)
             .fontColor('#AAAAAA')
             .margin({ top: 40 })
 
-          Text('AI Agent with ReAct loop, tool use, memory, and task scheduling.\nPorted from NanoClaw (OpenClaw lightweight alternative).')
+          Text('AI Agent with ReAct loop, tool use, memory, and task scheduling.\nBased on NanoClaw, rewritten in pure ArkTS for HarmonyOS.')
             .fontSize(12)
             .fontColor('#CCCCCC')
             .margin({ top: 8 })
