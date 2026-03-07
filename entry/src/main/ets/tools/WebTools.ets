@@ -98,29 +98,21 @@ function extractDDGResults(html: string): string[] {
 }
 
 export function registerWebTools(registry: ToolRegistry): void {
+  const fetchSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"url":{"type":"string","description":"The URL to fetch"}},"required":["url"]}')
+
   registry.registerTool(
     'web_fetch',
     'Fetch the content of a web page. Returns the text content with HTML tags stripped.',
-    {
-      type: 'object',
-      properties: {
-        url: { type: 'string', description: 'The URL to fetch' }
-      },
-      required: ['url']
-    } as Record<string, Object>,
+    fetchSchema,
     webFetch
   )
+
+  const searchSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"query":{"type":"string","description":"Search query"}},"required":["query"]}')
 
   registry.registerTool(
     'web_search',
     'Search the web using DuckDuckGo. Returns search results with titles, URLs, and snippets.',
-    {
-      type: 'object',
-      properties: {
-        query: { type: 'string', description: 'Search query' }
-      },
-      required: ['query']
-    } as Record<string, Object>,
+    searchSchema,
     webSearch
   )
 

@@ -27,6 +27,14 @@ struct Index {
   private scroller: Scroller = new Scroller()
 
   async aboutToAppear(): Promise<void> {
+    await this.refreshState()
+  }
+
+  async onPageShow(): Promise<void> {
+    await this.refreshState()
+  }
+
+  async refreshState(): Promise<void> {
     this.hasApiKey = await configService.hasApiKey()
     if (this.hasApiKey) {
       await this.loadMessages()
@@ -35,13 +43,18 @@ struct Index {
 
   async loadMessages(): Promise<void> {
     const msgs = await dbService.getMessages(this.chatId, 100)
-    this.messages = msgs.map(m => ({
-      id: m.id,
-      content: m.content,
-      isFromMe: m.isFromMe,
-      timestamp: m.timestamp,
-      toolCalls: m.toolCalls
-    }))
+    const displayMsgs: DisplayMessage[] = []
+    for (const m of msgs) {
+      const dm: DisplayMessage = {
+        id: m.id,
+        content: m.content,
+        isFromMe: m.isFromMe,
+        timestamp: m.timestamp,
+        toolCalls: m.toolCalls
+      }
+      displayMsgs.push(dm)
+    }
+    this.messages = displayMsgs
     this.scrollToBottom()
   }
 
@@ -70,13 +83,14 @@ struct Index {
 
     // Add thinking indicator
     const thinkingId = generateId()
-    this.messages.push({
+    const thinkingMsg: DisplayMessage = {
       id: thinkingId,
       content: 'Thinking...',
       isFromMe: false,
       timestamp: new Date().toISOString(),
       isThinking: true
-    })
+    }
+    this.messages.push(thinkingMsg)
     this.scrollToBottom()
 
     // Collect tool calls for this turn
@@ -84,26 +98,33 @@ struct Index {
 
     await agentCore.runAgent(text, this.chatId, (event: AgentEvent) => {
       if (event.type === 'tool_use') {
-        toolCalls.push({
+        const tc: ToolCallRecord = {
           name: event.name,
           input: event.input,
           result: event.result,
           isError: event.isError
-        })
+        }
+        toolCalls.push(tc)
         this.currentToolInfo = `Using: ${event.name}`
         // Update thinking message
         const thinkingIdx = this.messages.findIndex(m => m.id === thinkingId)
         if (thinkingIdx >= 0) {
-          this.messages[thinkingIdx] = {
-            ...this.messages[thinkingIdx],
-            content: `Using tool: ${event.name}...`
+          const existing = this.messages[thinkingIdx]
+          const updated: DisplayMessage = {
+            id: existing.id,
+            content: `Using tool: ${event.name}...`,
+            isFromMe: existing.isFromMe,
+            timestamp: existing.timestamp,
+            toolCalls: existing.toolCalls,
+            isThinking: existing.isThinking
           }
+          this.messages[thinkingIdx] = updated
         }
       } else if (event.type === 'text') {
         // Replace thinking message with actual response
         const thinkingIdx = this.messages.findIndex(m => m.id === thinkingId)
         if (thinkingIdx >= 0) {
-          this.messages[thinkingIdx] = {
+          const replacement: DisplayMessage = {
             id: generateId(),
             content: event.content,
             isFromMe: false,
@@ -111,17 +132,19 @@ struct Index {
             toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
             isThinking: false
           }
+          this.messages[thinkingIdx] = replacement
         }
       } else if (event.type === 'error') {
         const thinkingIdx = this.messages.findIndex(m => m.id === thinkingId)
         if (thinkingIdx >= 0) {
-          this.messages[thinkingIdx] = {
+          const errMsg: DisplayMessage = {
             id: generateId(),
             content: `Error: ${event.error}`,
             isFromMe: false,
             timestamp: new Date().toISOString(),
             isThinking: false
           }
+          this.messages[thinkingIdx] = errMsg
         }
       } else if (event.type === 'done') {
         this.isRunning = false
@@ -214,7 +237,7 @@ struct Index {
                     .backgroundColor(msg.isFromMe ? '#4A90D9' : (msg.isThinking ? '#E8E8E8' : '#F0F0F0'))
                     .borderRadius(16)
                     .padding({ left: 14, right: 14, top: 10, bottom: 10 })
-                    .maxWidth('75%')
+                    .constraintSize({ maxWidth: '75%' })
                     .wordBreak(WordBreak.BREAK_ALL)
 
                   if (!msg.isFromMe) {

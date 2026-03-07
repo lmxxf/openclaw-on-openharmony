@@ -13,10 +13,13 @@ import { registerWebTools } from '../tools/WebTools'
 import { registerTaskTools, setTaskChatId } from '../tools/TaskTools'
 import {
   AgentEvent,
+  AgentTextEvent,
+  AgentToolUseEvent,
+  AgentErrorEvent,
+  AgentDoneEvent,
   ApiConfig,
   ApiMessage,
   ChatMessage,
-  ToolCall,
   ToolCallRecord
 } from '../models/Types'
 
@@ -109,16 +112,17 @@ export class AgentCore {
       const history = await dbService.getMessages(chatId, CONTEXT_WINDOW)
 
       // Build API messages
-      const apiMessages: ApiMessage[] = [
-        { role: 'system', content: SYSTEM_PROMPT }
-      ]
+      const sysMsg: ApiMessage = { role: 'system', content: SYSTEM_PROMPT }
+      const apiMessages: ApiMessage[] = [sysMsg]
 
       // Add history (convert to API format)
       for (const msg of history) {
         if (msg.isFromMe) {
-          apiMessages.push({ role: 'user', content: msg.content })
+          const uMsg: ApiMessage = { role: 'user', content: msg.content }
+          apiMessages.push(uMsg)
         } else {
-          apiMessages.push({ role: 'assistant', content: msg.content })
+          const aMsg: ApiMessage = { role: 'assistant', content: msg.content }
+          apiMessages.push(aMsg)
         }
       }
 
@@ -140,11 +144,12 @@ export class AgentCore {
         // Check if model wants to call tools
         if (choice.finishReason === 'tool_calls' && assistantMessage.toolCalls) {
           // Append assistant message with tool calls to history
-          apiMessages.push({
+          const assistApiMsg: ApiMessage = {
             role: 'assistant',
             content: assistantMessage.content,
             toolCalls: assistantMessage.toolCalls
-          })
+          }
+          apiMessages.push(assistApiMsg)
 
           // Execute each tool call
           for (const toolCall of assistantMessage.toolCalls) {
@@ -157,28 +162,31 @@ export class AgentCore {
             )
 
             // Report tool use to UI
-            onEvent({
+            const toolEvent: AgentToolUseEvent = {
               type: 'tool_use',
               name: toolCall.function.name,
               input: toolCall.function.arguments,
               result: result.content,
               isError: result.isError
-            })
+            }
+            onEvent(toolEvent)
 
             // Record for storage
-            allToolRecords.push({
+            const record: ToolCallRecord = {
               name: toolCall.function.name,
               input: toolCall.function.arguments,
               result: result.content,
               isError: result.isError
-            })
+            }
+            allToolRecords.push(record)
 
             // Append tool result to history
-            apiMessages.push({
+            const toolMsg: ApiMessage = {
               role: 'tool',
               content: result.content,
               toolCallId: toolCall.id
-            })
+            }
+            apiMessages.push(toolMsg)
           }
 
           // Continue the loop - model will see tool results
@@ -189,7 +197,8 @@ export class AgentCore {
         const textContent = assistantMessage.content || ''
 
         if (textContent) {
-          onEvent({ type: 'text', content: textContent })
+          const textEvent: AgentTextEvent = { type: 'text', content: textContent }
+          onEvent(textEvent)
         }
 
         // Store assistant response
@@ -205,13 +214,15 @@ export class AgentCore {
         }
         await dbService.storeMessage(assistantMsg)
 
-        onEvent({ type: 'done' })
+        const doneEvent: AgentDoneEvent = { type: 'done' }
+        onEvent(doneEvent)
         return
       }
 
       // Hit max iterations
       const maxIterMsg = `[Reached maximum ${MAX_ITERATIONS} tool call iterations]`
-      onEvent({ type: 'text', content: maxIterMsg })
+      const maxEvent: AgentTextEvent = { type: 'text', content: maxIterMsg }
+      onEvent(maxEvent)
 
       const overflowMsg: ChatMessage = {
         id: generateId(),
@@ -225,12 +236,14 @@ export class AgentCore {
       }
       await dbService.storeMessage(overflowMsg)
 
-      onEvent({ type: 'done' })
+      const doneEvent2: AgentDoneEvent = { type: 'done' }
+      onEvent(doneEvent2)
 
     } catch (e) {
       const errorMsg = (e as Error).message || String(e)
       Logger.error(`Agent error: ${errorMsg}`)
-      onEvent({ type: 'error', error: errorMsg })
+      const errEvent: AgentErrorEvent = { type: 'error', error: errorMsg }
+      onEvent(errEvent)
     }
   }
 }

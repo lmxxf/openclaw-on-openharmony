@@ -74,40 +74,30 @@ async function memoryList(_input: Record<string, Object>): Promise<string> {
 }
 
 export function registerMemoryTools(registry: ToolRegistry): void {
+  const memReadSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"name":{"type":"string","description":"Memory name (without .md extension)"}},"required":["name"]}')
+
   registry.registerTool(
     'memory_read',
     'Read a persistent memory note by name. Memory files are markdown documents that persist across conversations.',
-    {
-      type: 'object',
-      properties: {
-        name: { type: 'string', description: 'Memory name (without .md extension)' }
-      },
-      required: ['name']
-    } as Record<string, Object>,
+    memReadSchema,
     memoryRead
   )
+
+  const memWriteSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"name":{"type":"string","description":"Memory name (without .md extension)"},"content":{"type":"string","description":"Markdown content to save"}},"required":["name","content"]}')
 
   registry.registerTool(
     'memory_write',
     'Write or update a persistent memory note. Use this to remember important information across conversations.',
-    {
-      type: 'object',
-      properties: {
-        name: { type: 'string', description: 'Memory name (without .md extension)' },
-        content: { type: 'string', description: 'Markdown content to save' }
-      },
-      required: ['name', 'content']
-    } as Record<string, Object>,
+    memWriteSchema,
     memoryWrite
   )
+
+  const memListSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{}}')
 
   registry.registerTool(
     'memory_list',
     'List all saved memory files.',
-    {
-      type: 'object',
-      properties: {}
-    } as Record<string, Object>,
+    memListSchema,
     memoryList
   )
 

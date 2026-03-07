@@ -3,7 +3,7 @@
 import { relationalStore } from '@kit.ArkData'
 import { common } from '@kit.AbilityKit'
 import { Logger } from '../utils/Logger'
-import { ChatMessage, ChatConversation, ScheduledTask, TaskRunLog } from '../models/Types'
+import { ChatMessage, ChatConversation, ScheduledTask, TaskRunLog, ToolCallRecord } from '../models/Types'
 
 const DB_NAME = 'nanoclaw.db'
 const STORE_CONFIG: relationalStore.StoreConfig = {
@@ -152,7 +152,7 @@ export class DatabaseService {
         content: resultSet.getString(resultSet.getColumnIndex('content')),
         timestamp: resultSet.getString(resultSet.getColumnIndex('timestamp')),
         isFromMe: resultSet.getLong(resultSet.getColumnIndex('is_from_me')) === 1,
-        toolCalls: toolCalls as ChatMessage['toolCalls']
+        toolCalls: toolCalls as ToolCallRecord[] | undefined
       })
     }
     resultSet.close()
@@ -260,12 +260,12 @@ export class DatabaseService {
       id: resultSet.getString(resultSet.getColumnIndex('id')),
       chatId: resultSet.getString(resultSet.getColumnIndex('chat_id')),
       prompt: resultSet.getString(resultSet.getColumnIndex('prompt')),
-      scheduleType: resultSet.getString(resultSet.getColumnIndex('schedule_type')) as ScheduledTask['scheduleType'],
+      scheduleType: resultSet.getString(resultSet.getColumnIndex('schedule_type')) as ('cron' | 'interval' | 'once'),
       scheduleValue: resultSet.getString(resultSet.getColumnIndex('schedule_value')),
       nextRun: resultSet.isColumnNull(resultSet.getColumnIndex('next_run')) ? null : resultSet.getString(resultSet.getColumnIndex('next_run')),
       lastRun: resultSet.isColumnNull(resultSet.getColumnIndex('last_run')) ? null : resultSet.getString(resultSet.getColumnIndex('last_run')),
       lastResult: resultSet.isColumnNull(resultSet.getColumnIndex('last_result')) ? null : resultSet.getString(resultSet.getColumnIndex('last_result')),
-      status: resultSet.getString(resultSet.getColumnIndex('status')) as ScheduledTask['status'],
+      status: resultSet.getString(resultSet.getColumnIndex('status')) as ('active' | 'paused' | 'completed'),
       createdAt: resultSet.getString(resultSet.getColumnIndex('created_at'))
     }
   }

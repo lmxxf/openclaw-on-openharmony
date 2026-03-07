@@ -51,7 +51,7 @@ async function scheduleTask(input: Record<string, Object>): Promise<string> {
     id,
     chatId: defaultChatId,
     prompt,
-    scheduleType: scheduleType as ScheduledTask['scheduleType'],
+    scheduleType: scheduleType as ('cron' | 'interval' | 'once'),
     scheduleValue,
     nextRun,
     lastRun: null,
@@ -114,67 +114,48 @@ async function cancelTask(input: Record<string, Object>): Promise<string> {
 }
 
 export function registerTaskTools(registry: ToolRegistry): void {
+  const scheduleSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"prompt":{"type":"string","description":"The prompt to execute when the task runs"},"schedule_type":{"type":"string","enum":["cron","interval","once"],"description":"Type: cron (cron expression), interval (milliseconds), once (ISO datetime)"},"schedule_value":{"type":"string","description":"For cron: 0 9 * * * (9 AM daily). For interval: 3600000 (1 hour in ms). For once: ISO datetime string."}},"required":["prompt","schedule_type","schedule_value"]}')
+
   registry.registerTool(
     'schedule_task',
     'Schedule a recurring or one-time task. The task will run the given prompt at the specified schedule.',
-    {
-      type: 'object',
-      properties: {
-        prompt: { type: 'string', description: 'The prompt to execute when the task runs' },
-        schedule_type: { type: 'string', enum: ['cron', 'interval', 'once'], description: 'Type: cron (cron expression), interval (milliseconds), once (ISO datetime)' },
-        schedule_value: { type: 'string', description: 'For cron: "0 9 * * *" (9 AM daily). For interval: "3600000" (1 hour in ms). For once: ISO datetime string.' }
-      },
-      required: ['prompt', 'schedule_type', 'schedule_value']
-    } as Record<string, Object>,
+    scheduleSchema,
     scheduleTask
   )
+
+  const listSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{}}')
 
   registry.registerTool(
     'list_tasks',
     'List all scheduled tasks with their status, schedule, and next run time.',
-    {
-      type: 'object',
-      properties: {}
-    } as Record<string, Object>,
+    listSchema,
     listTasks
   )
+
+  const pauseSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"task_id":{"type":"string","description":"The task ID to pause"}},"required":["task_id"]}')
 
   registry.registerTool(
     'pause_task',
     'Pause a scheduled task. It will not run until resumed.',
-    {
-      type: 'object',
-      properties: {
-        task_id: { type: 'string', description: 'The task ID to pause' }
-      },
-      required: ['task_id']
-    } as Record<string, Object>,
+    pauseSchema,
     pauseTask
   )
+
+  const resumeSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"task_id":{"type":"string","description":"The task ID to resume"}},"required":["task_id"]}')
 
   registry.registerTool(
     'resume_task',
     'Resume a paused task.',
-    {
-      type: 'object',
-      properties: {
-        task_id: { type: 'string', description: 'The task ID to resume' }
-      },
-      required: ['task_id']
-    } as Record<string, Object>,
+    resumeSchema,
     resumeTask
   )
+
+  const cancelSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"task_id":{"type":"string","description":"The task ID to cancel"}},"required":["task_id"]}')
 
   registry.registerTool(
     'cancel_task',
     'Cancel and delete a scheduled task permanently.',
-    {
-      type: 'object',
-      properties: {
-        task_id: { type: 'string', description: 'The task ID to cancel' }
-      },
-      required: ['task_id']
-    } as Record<string, Object>,
+    cancelSchema,
     cancelTask
   )
 

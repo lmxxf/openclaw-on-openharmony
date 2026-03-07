@@ -2,7 +2,7 @@
 // Uses @ohos.net.http for HTTP requests
 import { http } from '@kit.NetworkKit'
 import { Logger } from '../utils/Logger'
-import { ApiConfig, ApiMessage, ApiResponse, ToolDefinition, ToolCall } from '../models/Types'
+import { ApiConfig, ApiMessage, ApiResponse, ApiChoice, ApiUsage, ToolDefinition, ToolCall, ToolCallFunction } from '../models/Types'
 
 interface ApiRequestBody {
   model: string
@@ -101,22 +101,29 @@ export class ApiClient {
     const url = `${this.config.baseUrl}/chat/completions`
 
     // Convert messages to API format (snake_case)
-    const apiMessages: ApiRequestMessage[] = messages.map(m => {
+    const apiMessages: ApiRequestMessage[] = []
+    for (const m of messages) {
       const msg: ApiRequestMessage = { role: m.role }
       if (m.content !== undefined) msg.content = m.content
       if (m.toolCalls && m.toolCalls.length > 0) {
-        msg.tool_calls = m.toolCalls.map(tc => ({
-          id: tc.id,
-          type: tc.type,
-          function: {
+        const tcList: ApiRequestToolCall[] = []
+        for (const tc of m.toolCalls) {
+          const fn: ApiRequestFunction = {
             name: tc.function.name,
             arguments: tc.function.arguments
           }
-        }))
+          const reqTc: ApiRequestToolCall = {
+            id: tc.id,
+            type: tc.type,
+            function: fn
+          }
+          tcList.push(reqTc)
+        }
+        msg.tool_calls = tcList
       }
       if (m.toolCallId) msg.tool_call_id = m.toolCallId
-      return msg
-    })
+      apiMessages.push(msg)
+    }
 
     const body: ApiRequestBody = {
       model: this.config.model,
@@ -127,14 +134,20 @@ export class ApiClient {
     }
 
     if (tools && tools.length > 0) {
-      body.tools = tools.map(t => ({
-        type: t.type,
-        function: {
+      const toolList: ApiRequestTool[] = []
+      for (const t of tools) {
+        const fn: ApiRequestToolFunction = {
           name: t.function.name,
           description: t.function.description,
           parameters: t.function.parameters
         }
-      }))
+        const reqTool: ApiRequestTool = {
+          type: t.type,
+          function: fn
+        }
+        toolList.push(reqTool)
+      }
+      body.tools = toolList
     }
 
     const httpRequest = http.createHttp()
@@ -186,7 +199,7 @@ export class ApiClient {
       } catch (e) {
         if (retries >= maxRetries) {
           httpRequest.destroy()
-          throw e
+          throw e as Error
         }
         retries++
         Logger.warn(`API request failed, retrying (attempt ${retries}/${maxRetries}): ${(e as Error).message}`)
@@ -205,32 +218,45 @@ export class ApiClient {
 
     let toolCalls: ToolCall[] | undefined
     if (message.tool_calls && message.tool_calls.length > 0) {
-      toolCalls = message.tool_calls.map(tc => ({
-        id: tc.id,
-        type: 'function' as const,
-        function: {
+      toolCalls = []
+      for (const tc of message.tool_calls) {
+        const fn: ToolCallFunction = {
           name: tc.function.name,
           arguments: tc.function.arguments
         }
-      }))
-    }
-
-    return {
-      id: body.id,
-      choices: [{
-        index: choice.index,
-        message: {
-          role: message.role as ApiMessage['role'],
-          content: message.content,
-          toolCalls: toolCalls
-        },
-        finishReason: choice.finish_reason
-      }],
-      usage: {
-        promptTokens: body.usage.prompt_tokens,
-        completionTokens: body.usage.completion_tokens,
-        totalTokens: body.usage.total_tokens
+        const toolCall: ToolCall = {
+          id: tc.id,
+          type: 'function',
+          function: fn
+        }
+        toolCalls.push(toolCall)
       }
     }
+
+    const apiMessage: ApiMessage = {
+      role: message.role as ('system' | 'user' | 'assistant' | 'tool'),
+      content: message.content,
+      toolCalls: toolCalls
+    }
+
+    const apiChoice: ApiChoice = {
+      index: choice.index,
+      message: apiMessage,
+      finishReason: choice.finish_reason
+    }
+
+    const apiUsage: ApiUsage = {
+      promptTokens: body.usage.prompt_tokens,
+      completionTokens: body.usage.completion_tokens,
+      totalTokens: body.usage.total_tokens
+    }
+
+    const apiResponse: ApiResponse = {
+      id: body.id,
+      choices: [apiChoice],
+      usage: apiUsage
+    }
+
+    return apiResponse
   }
 }

@@ -94,42 +94,30 @@ async function fileList(input: Record<string, Object>): Promise<string> {
 }
 
 export function registerFileTools(registry: ToolRegistry): void {
+  const fileReadSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"path":{"type":"string","description":"File path relative to app sandbox root"}},"required":["path"]}')
+
   registry.registerTool(
     'file_read',
     'Read the contents of a file from the app sandbox. Returns the text content.',
-    {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'File path relative to app sandbox root' }
-      },
-      required: ['path']
-    } as Record<string, Object>,
+    fileReadSchema,
     fileRead
   )
+
+  const fileWriteSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"path":{"type":"string","description":"File path relative to app sandbox root"},"content":{"type":"string","description":"Content to write"}},"required":["path","content"]}')
 
   registry.registerTool(
     'file_write',
     'Write content to a file in the app sandbox. Creates parent directories if needed.',
-    {
-      type: 'object',
-      properties: {
-        path: { type: 'string', description: 'File path relative to app sandbox root' },
-        content: { type: 'string', description: 'Content to write' }
-      },
-      required: ['path', 'content']
-    } as Record<string, Object>,
+    fileWriteSchema,
     fileWrite
   )
+
+  const fileListSchema: Record<string, Object> = JSON.parse('{"type":"object","properties":{"directory":{"type":"string","description":"Directory path relative to sandbox root. Default: /"}}}')
 
   registry.registerTool(
     'file_list',
     'List files and directories in the app sandbox.',
-    {
-      type: 'object',
-      properties: {
-        directory: { type: 'string', description: 'Directory path relative to sandbox root. Default: /' }
-      }
-    } as Record<string, Object>,
+    fileListSchema,
     fileList
   )
 

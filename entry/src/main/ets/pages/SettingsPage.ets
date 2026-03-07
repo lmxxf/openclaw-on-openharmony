@@ -27,6 +27,10 @@ struct SettingsPage {
     await configService.setModel(this.model)
     this.statusMessage = 'Settings saved!'
     this.isSaving = false
+    // Auto-return to main page after saving
+    setTimeout(() => {
+      router.back()
+    }, 500)
   }
 
   async testConnection(): Promise<void> {
@@ -48,9 +52,8 @@ struct SettingsPage {
       }
 
       const client = new ApiClient(config)
-      const messages: ApiMessage[] = [
-        { role: 'user', content: 'Say "hello" in one word.' }
-      ]
+      const testMsg: ApiMessage = { role: 'user', content: 'Say "hello" in one word.' }
+      const messages: ApiMessage[] = [testMsg]
       const response = await client.sendMessage(messages)
       const reply = response.choices[0].message.content || '(empty)'
       this.statusMessage = `Connection OK! Response: "${reply}" (${response.usage.totalTokens} tokens)`

@@ -1,5 +1,5 @@
 // Tool registration and dispatch
-import { ToolDefinition, ToolResult } from '../models/Types'
+import { ToolDefinition, ToolFunction, ToolResult } from '../models/Types'
 import { Logger } from '../utils/Logger'
 
 export type ToolExecutor = (input: Record<string, Object>) => Promise<string>
@@ -18,17 +18,20 @@ export class ToolRegistry {
     parameters: Record<string, Object>,
     executor: ToolExecutor
   ): void {
-    this.tools.set(name, {
-      definition: {
-        type: 'function',
-        function: {
-          name,
-          description,
-          parameters
-        }
-      },
+    const fn: ToolFunction = {
+      name,
+      description,
+      parameters
+    }
+    const def: ToolDefinition = {
+      type: 'function',
+      function: fn
+    }
+    const registered: RegisteredTool = {
+      definition: def,
       executor
-    })
+    }
+    this.tools.set(name, registered)
     Logger.info(`Tool registered: ${name}`)
   }
 
@@ -44,30 +47,33 @@ export class ToolRegistry {
     const tool = this.tools.get(name)
     if (!tool) {
       Logger.warn(`Unknown tool: ${name}`)
-      return {
+      const errResult: ToolResult = {
         toolCallId,
         content: `Error: unknown tool "${name}"`,
         isError: true
       }
+      return errResult
     }
 
     try {
       const input = JSON.parse(inputJson) as Record<string, Object>
       Logger.info(`Executing tool: ${name}`)
-      const result = await tool.executor(input)
-      return {
+      const resultStr = await tool.executor(input)
+      const okResult: ToolResult = {
         toolCallId,
-        content: result,
+        content: resultStr,
         isError: false
       }
+      return okResult
     } catch (e) {
       const errorMsg = (e as Error).message || String(e)
       Logger.error(`Tool ${name} failed: ${errorMsg}`)
-      return {
+      const failResult: ToolResult = {
         toolCallId,
         content: `Error: ${errorMsg}`,
         isError: true
       }
+      return failResult
     }
   }
 }

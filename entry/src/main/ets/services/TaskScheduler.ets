@@ -85,7 +85,8 @@ export class TaskScheduler {
 
     // Compute next run
     const nextRun = computeNextRun(task.scheduleType, task.scheduleValue, task.nextRun)
-    const resultSummary = error ? `Error: ${error}` : (result ? result.substring(0, 200) : 'Completed')
+    const resultStr: string = result !== null ? result : ''
+    const resultSummary: string = error ? `Error: ${error}` : (resultStr ? resultStr.substring(0, 200) : 'Completed')
     await dbService.updateTaskAfterRun(task.id, nextRun, resultSummary)
 
     Logger.info(`Task ${task.id} completed in ${durationMs}ms`)
