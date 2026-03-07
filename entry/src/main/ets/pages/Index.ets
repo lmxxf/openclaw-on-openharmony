@@ -160,7 +160,7 @@ struct Index {
     Column() {
       // Title bar
       Row() {
-        Text('KienClaw')
+        Text('OHClaw')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor('#FFFFFF')
@@ -180,7 +180,7 @@ struct Index {
       if (!this.hasApiKey) {
         // No API key configured
         Column() {
-          Text('Welcome to KienClaw')
+          Text('Welcome to OHClaw')
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
             .margin({ bottom: 16 })

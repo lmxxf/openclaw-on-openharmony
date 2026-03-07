@@ -179,7 +179,7 @@ struct SettingsPage {
           }
 
           // Info
-          Text('KienClaw')
+          Text('OHClaw')
             .fontSize(12)
             .fontColor('#AAAAAA')
             .margin({ top: 40 })

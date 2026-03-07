@@ -2,7 +2,7 @@
 import { hilog } from '@kit.PerformanceAnalysisKit'
 
 const DOMAIN = 0x0000
-const TAG = 'KienClaw'
+const TAG = 'OHClaw'
 
 export class Logger {
   static debug(msg: string): void {

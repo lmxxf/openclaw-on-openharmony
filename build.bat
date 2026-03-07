@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-REM === KienClaw - Build & Deploy Script ===
+REM === OHClaw - Build & Deploy Script ===
 
 set PROJECT_DIR=%~dp0
 set NODE_EXE="C:\Program Files\Huawei\DevEco Studio\tools\node\node.exe"

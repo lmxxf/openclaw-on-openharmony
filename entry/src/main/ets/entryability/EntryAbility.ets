@@ -13,18 +13,18 @@ export default class EntryAbility extends UIAbility {
     try {
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
     } catch (err) {
-      hilog.error(DOMAIN, 'KienClaw', 'Failed to set colorMode: %{public}s', JSON.stringify(err));
+      hilog.error(DOMAIN, 'OHClaw', 'Failed to set colorMode: %{public}s', JSON.stringify(err));
     }
-    hilog.info(DOMAIN, 'KienClaw', 'NanoClaw starting...');
+    hilog.info(DOMAIN, 'OHClaw', 'OHClaw starting...');
   }
 
   onDestroy(): void {
     taskScheduler.stop();
-    hilog.info(DOMAIN, 'KienClaw', 'NanoClaw destroyed');
+    hilog.info(DOMAIN, 'OHClaw', 'OHClaw destroyed');
   }
 
   async onWindowStageCreate(windowStage: window.WindowStage): Promise<void> {
-    hilog.info(DOMAIN, 'KienClaw', 'Initializing services...');
+    hilog.info(DOMAIN, 'OHClaw', 'Initializing services...');
 
     // Initialize services
     try {
@@ -35,29 +35,29 @@ export default class EntryAbility extends UIAbility {
       // Start task scheduler
       taskScheduler.start();
 
-      hilog.info(DOMAIN, 'KienClaw', 'All services initialized');
+      hilog.info(DOMAIN, 'OHClaw', 'All services initialized');
     } catch (err) {
-      hilog.error(DOMAIN, 'KienClaw', 'Service init failed: %{public}s', JSON.stringify(err));
+      hilog.error(DOMAIN, 'OHClaw', 'Service init failed: %{public}s', JSON.stringify(err));
     }
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
-        hilog.error(DOMAIN, 'KienClaw', 'Failed to load content: %{public}s', JSON.stringify(err));
+        hilog.error(DOMAIN, 'OHClaw', 'Failed to load content: %{public}s', JSON.stringify(err));
         return;
       }
-      hilog.info(DOMAIN, 'KienClaw', 'Content loaded successfully');
+      hilog.info(DOMAIN, 'OHClaw', 'Content loaded successfully');
     });
   }
 
   onWindowStageDestroy(): void {
-    hilog.info(DOMAIN, 'KienClaw', 'Window stage destroyed');
+    hilog.info(DOMAIN, 'OHClaw', 'Window stage destroyed');
   }
 
   onForeground(): void {
-    hilog.info(DOMAIN, 'KienClaw', 'App in foreground');
+    hilog.info(DOMAIN, 'OHClaw', 'App in foreground');
   }
 
   onBackground(): void {
-    hilog.info(DOMAIN, 'KienClaw', 'App in background');
+    hilog.info(DOMAIN, 'OHClaw', 'App in background');
   }
 }
