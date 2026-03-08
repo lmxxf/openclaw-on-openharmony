@@ -1,0 +1,6 @@
+{
+  "name": "translate",
+  "command": "/translate",
+  "description": "翻译文本到英文",
+  "prompt": "Translate the following text to English. Output only the translation, nothing else.\n\n{{input}}"
+}

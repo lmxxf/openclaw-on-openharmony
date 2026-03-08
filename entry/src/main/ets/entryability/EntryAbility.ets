@@ -30,7 +30,7 @@ export default class EntryAbility extends UIAbility {
     try {
       await dbService.init(this.context);
       await configService.init(this.context);
-      await agentCore.init(this.context.filesDir);
+      await agentCore.init(this.context.filesDir, this.context);
 
       // Start task scheduler
       taskScheduler.start();

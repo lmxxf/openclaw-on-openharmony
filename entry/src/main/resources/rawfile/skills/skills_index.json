@@ -1,0 +1,6 @@
+{
+  "skills": [
+    { "file": "skills/translate.json" },
+    { "file": "skills/explain.json" }
+  ]
+}

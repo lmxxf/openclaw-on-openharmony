@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "id": "device_manual",
+      "file": "knowledge/device_manual.txt",
+      "title": "设备使用手册",
+      "keywords": ["蓝牙", "亮度", "Wi-Fi", "WiFi", "时间", "系统", "设备", "设置", "屏幕", "显示", "网络", "音量", "密码", "锁屏"]
+    },
+    {
+      "id": "oh6_features",
+      "file": "knowledge/oh6_features.txt",
+      "title": "OpenHarmony 6.0 特性说明",
+      "keywords": ["OpenHarmony", "鸿蒙", "分布式", "安全", "性能", "ArkTS", "ArkUI", "Stage", "模型", "API", "特性", "功能", "新增"]
+    },
+    {
+      "id": "settings_faq",
+      "file": "knowledge/settings_faq.txt",
+      "title": "设置应用常见问题",
+      "keywords": ["问题", "故障", "怎么", "如何", "为什么", "不能", "失败", "错误", "解决", "修复", "连接", "配对"]
+    }
+  ]
+}

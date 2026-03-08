@@ -1,0 +1,51 @@
+OpenHarmony 6.0 主要特性说明
+
+
+【ArkTS 与 ArkUI 声明式开发】
+
+OpenHarmony 6.0 全面采用 ArkTS 作为主力应用开发语言。ArkTS 基于 TypeScript 扩展，增加了声明式 UI 范式、状态管理和轻量化并发能力。开发者可使用 @Component 装饰器定义自定义组件，通过 @State、@Prop、@Link 等装饰器管理组件内和组件间的状态流转。
+
+ArkUI 框架提供丰富的内置组件库，包括 Text、Image、List、Grid、Tabs、Navigation 等布局与交互组件。支持自定义绘制（Canvas）、动画系统（animateTo、transition）以及手势处理（TapGesture、PanGesture 等）。渲染管线基于自研引擎，实现了声明式描述到原生渲染的高效映射，列表滚动帧率可稳定在 60fps。
+
+
+【Stage 模型应用框架】
+
+OpenHarmony 6.0 推荐使用 Stage 模型作为应用架构基础。Stage 模型以 UIAbility 和 ExtensionAbility 为核心抽象，UIAbility 负责界面生命周期管理，ExtensionAbility 提供后台服务、卡片、输入法等扩展能力。
+
+应用通过 module.json5 声明模块配置，支持多 HAP（Harmony Ability Package）协同部署。每个 HAP 可独立包含代码、资源和配置，实现按需加载和模块化分发。WindowStage 管理窗口生命周期，提供 onWindowStageCreate、onForeground、onBackground 等回调，开发者可精确控制页面加载时机和资源释放策略。
+
+
+【分布式能力】
+
+分布式软总线是 OpenHarmony 跨设备协同的核心基础设施。6.0 版本优化了设备发现速度和连接建立延迟，同一局域网内设备发现时间缩短至 2 秒以内。
+
+分布式数据管理支持 KV 存储和关系型数据库的跨设备同步。开发者可通过 distributedKVStore 接口实现数据在多设备间的自动同步，支持按设备、按条件的灵活同步策略。分布式文件系统允许应用透明访问远端设备上的文件资源。
+
+跨设备迁移（Continuation）和多设备协同（Collaboration）能力允许应用将任务从一个设备无缝流转到另一个设备，或在多个设备上同时协作。典型场景包括手机到平板的任务接续、手机与大屏的多屏协同。
+
+
+【安全增强】
+
+OpenHarmony 6.0 实施多层次安全架构。应用沙箱机制确保每个应用运行在独立的安全环境中，文件系统隔离、进程隔离和权限隔离三重保障。
+
+权限管理采用最小权限原则，所有敏感 API 调用需要预先在 module.json5 中声明，并在运行时动态向用户申请授权。权限分为 system_grant（系统自动授予）和 user_grant（需用户手动确认）两类。6.0 新增了临时授权机制，应用可申请单次使用权限，使用完成后自动回收。
+
+数据安全方面，支持 HUKS（通用密钥库）进行密钥管理和加解密操作，提供 AES、RSA、ECC 等标准加密算法。敏感数据存储推荐使用加密数据库或安全偏好存储接口。
+
+
+【AI 子系统】
+
+OpenHarmony 6.0 内置 Neural Network Runtime（NNRt）统一 AI 推理接口，为应用层提供硬件无关的推理能力抽象。支持对接 NPU、GPU、CPU 等多种推理后端，自动选择最优执行设备。
+
+集成 MindSpore Lite 推理框架，支持加载 .ms 格式模型文件，覆盖图像分类、目标检测、自然语言处理、语音识别等主流 AI 任务。推理性能针对 ARM 架构深度优化，INT8 量化模型推理速度提升显著。
+
+AI 子系统还提供预置能力接口，包括文字识别（OCR）、语音转文字（ASR）、图像超分辨率等开箱即用的 AI 能力，降低开发者接入门槛。
+
+
+【性能优化】
+
+OpenHarmony 6.0 在系统性能方面进行了全面优化。方舟编译器（ArkCompiler）支持 AOT（Ahead-of-Time）编译模式，将 ArkTS 代码在安装时编译为机器码，相比解释执行性能提升可达 3-5 倍。
+
+内存管理引入分代回收和并发标记清除策略，GC 停顿时间控制在 5ms 以内，有效避免界面卡顿。应用冷启动优化通过预加载框架资源和并行化初始化流程，首帧渲染时间降低约 30%。
+
+图形渲染管线支持 Vulkan 后端，提供更低的 CPU 开销和更高的 GPU 利用率。组件级别的按需刷新机制确保仅重新渲染状态变化的组件子树，最大限度降低渲染开销。

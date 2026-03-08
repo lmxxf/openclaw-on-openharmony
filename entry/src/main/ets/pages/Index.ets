@@ -269,7 +269,7 @@ struct Index {
 
         // Input bar
         Row() {
-          TextInput({ text: this.inputText, placeholder: 'Type a message...' })
+          TextInput({ text: this.inputText, placeholder: 'Message or /command...' })
             .layoutWeight(1)
             .height(44)
             .borderRadius(22)

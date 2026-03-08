@@ -1,0 +1,6 @@
+{
+  "name": "explain",
+  "command": "/explain",
+  "description": "逐步解释代码逻辑",
+  "prompt": "Explain the following code step by step in the user's language. Be clear and concise.\n\n```\n{{input}}\n```"
+}

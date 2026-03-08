@@ -11,12 +11,21 @@ const KEY_MODEL = 'model'
 const KEY_MAX_TOKENS = 'max_tokens'
 const KEY_TEMPERATURE = 'temperature'
 const KEY_ASSISTANT_NAME = 'assistant_name'
+const KEY_SILICONFLOW_API_KEY = 'siliconflow_api_key'
+const KEY_SILICONFLOW_API_URL = 'siliconflow_api_url'
+const KEY_EMBEDDING_MODEL = 'embedding_model'
+const KEY_MCP_SERVERS = 'mcp_servers'
 
+const DEFAULT_API_KEY = ''
 const DEFAULT_BASE_URL = 'https://api.deepseek.com/v1'
 const DEFAULT_MODEL = 'deepseek-chat'
 const DEFAULT_MAX_TOKENS = 8192
 const DEFAULT_TEMPERATURE = 0.7
 const DEFAULT_ASSISTANT_NAME = 'Andy'
+const DEFAULT_SILICONFLOW_API_KEY = 'sk-pznryirahmchscwxodgwxhrhhyyumzsodtkfgdhgzqenyzlp'
+const DEFAULT_SILICONFLOW_API_URL = 'https://api.siliconflow.cn/v1/embeddings'
+const DEFAULT_EMBEDDING_MODEL = 'BAAI/bge-m3'
+const DEFAULT_MCP_SERVERS = '[{"name":"高德地图","url":"https://mcp.amap.com/mcp?key=4229156b6896fd12fd1629d7e4e79861"}]'
 
 export class ConfigService {
   private pref: preferences.Preferences | null = null
@@ -32,7 +41,7 @@ export class ConfigService {
   }
 
   async getApiKey(): Promise<string> {
-    const val = await this.pref!.get(KEY_API_KEY, '')
+    const val = await this.pref!.get(KEY_API_KEY, DEFAULT_API_KEY)
     return val as string
   }
 
@@ -74,6 +83,51 @@ export class ConfigService {
   async hasApiKey(): Promise<boolean> {
     const key = await this.getApiKey()
     return key.length > 0
+  }
+
+  // --- SiliconFlow / RAG ---
+
+  async getSiliconFlowApiKey(): Promise<string> {
+    const val = await this.pref!.get(KEY_SILICONFLOW_API_KEY, DEFAULT_SILICONFLOW_API_KEY)
+    return val as string
+  }
+
+  async setSiliconFlowApiKey(key: string): Promise<void> {
+    await this.pref!.put(KEY_SILICONFLOW_API_KEY, key)
+    await this.pref!.flush()
+  }
+
+  async getSiliconFlowApiUrl(): Promise<string> {
+    const val = await this.pref!.get(KEY_SILICONFLOW_API_URL, DEFAULT_SILICONFLOW_API_URL)
+    return val as string
+  }
+
+  async setSiliconFlowApiUrl(url: string): Promise<void> {
+    await this.pref!.put(KEY_SILICONFLOW_API_URL, url)
+    await this.pref!.flush()
+  }
+
+  async getEmbeddingModel(): Promise<string> {
+    const val = await this.pref!.get(KEY_EMBEDDING_MODEL, DEFAULT_EMBEDDING_MODEL)
+    return val as string
+  }
+
+  async setEmbeddingModel(model: string): Promise<void> {
+    await this.pref!.put(KEY_EMBEDDING_MODEL, model)
+    await this.pref!.flush()
+  }
+
+  // --- MCP Servers ---
+
+  async getMcpServers(): Promise<string> {
+    // Stored as JSON string: [{"name":"xxx","url":"xxx"}, ...]
+    const val = await this.pref!.get(KEY_MCP_SERVERS, DEFAULT_MCP_SERVERS)
+    return val as string
+  }
+
+  async setMcpServers(json: string): Promise<void> {
+    await this.pref!.put(KEY_MCP_SERVERS, json)
+    await this.pref!.flush()
   }
 }
 
