@@ -117,6 +117,33 @@ pip install langchain
 - [ ] pip install langchain-core 最小集验证
 - [ ] 跑 LangChain hello world（调一次 LLM API）
 
+### RK3568 板子实测（2026-03-10）
+
+```
+hdc shell 操作方式：powershell.exe -Command "hdc shell '...'"
+```
+
+| 项目 | 结果 |
+|------|------|
+| 内核 | Linux 6.6.101 aarch64，Clang 15 编译 |
+| 动态链接器 | `/system/lib/ld-musl-aarch64.so.1`（注意是 lib 不是 lib64） |
+| Python | ❌ 没有 |
+| OpenSSL (libssl/libcrypto) | ❌ 没有（只有 `libcrypto_framework_ani.z.so`，是 OH 自己的加密框架，不是 OpenSSL） |
+| /data 分区 | f2fs，20G 总量，14G 可用 |
+| toybox | ✅ 有（ls 等基础命令） |
+
+**关键发现：**
+- 动态链接器在 `/system/lib/` 不是 `/system/lib64/`（之前假设错了）
+- **板子上没有 OpenSSL**——意味着 CPython 的 ssl 模块要么静态链接 OpenSSL，要么先编译 OpenSSL 推上去
+- 空间充足（14G），不是瓶颈
+
+**编译清单更新——需要交叉编译的东西：**
+1. OpenSSL → `libssl.a` + `libcrypto.a`（静态）
+2. CPython 3.11 → 带 ssl 模块，静态链接 musl + OpenSSL
+3. pydantic-core（Rust）
+4. cryptography（Rust + 上面编好的 OpenSSL）
+5. LangChain 纯 Python 包直接丢进去
+
 ---
 
 *OH 工程路径: `/home/lmxxf/oh6/source`*
